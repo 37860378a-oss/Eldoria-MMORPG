@@ -9,7 +9,7 @@
     return Number.isFinite(n)?[(n>>16)&255,(n>>8)&255,n&255]:[119,119,119];
   }
   function rgba(rgb,a){return 'rgba('+rgb.map(c=>Math.max(0,Math.min(255,Math.round(c))).toString()).join(',')+','+a+')'}
-  function paintBase(ctx,base,variation,rand){
+  function paintBase(ctx,base,variation,rand,repeat){
     const R=rand||Math.random, rgb=rgbOf(base);
     const power=Math.max(.35,Math.min(1.4,Number(variation)||.5));
     const max=Math.max.apply(null,rgb),min=Math.min.apply(null,rgb);
@@ -17,7 +17,8 @@
     const brown=rgb[0]>rgb[1]*1.12&&rgb[1]>rgb[2]*1.08;
     const stone=max-min<34;
     const blue=rgb[2]>rgb[0]*1.12&&rgb[2]>rgb[1]*1.04;
-    const profile=green?'foliage':brown?'earth-wood':stone?'stone':blue?'cold':'paint';
+    const verticalGrain=!!(repeat&&repeat[1]>repeat[0]*1.35);
+    const profile=green?'foliage':brown?(verticalGrain?'wood':'earth'):stone?'stone':blue?'cold':'paint';
     const light=rgb.map(c=>Math.min(255,c+(255-c)*.42));
     const shade=rgb.map(c=>Math.max(0,c*.48));
     const accent=green?[Math.min(255,rgb[0]+28),Math.min(255,rgb[1]+38),Math.min(255,rgb[2]+12)]:
@@ -44,8 +45,8 @@
     for(let i=0;i<210;i++){
       const x=R()*SIZE,y=R()*SIZE;
       let ang=(R()-.5)*1.7,len=3+R()*13;
-      if(profile==='earth-wood'&&rgb[0]>rgb[1]*1.25){ang=(R()-.5)*.32;len=5+R()*17}
-      else if(profile==='earth-wood'){ang=Math.PI/2+(R()-.5)*.38;len=4+R()*18}
+      if(profile==='wood'){ang=Math.PI/2+(R()-.5)*.38;len=4+R()*18}
+      else if(profile==='earth'){ang=(R()-.5)*.32;len=5+R()*17}
       else if(profile==='foliage'){ang=(R()-.5)*2.6;len=2+R()*8}
       else if(profile==='stone'){ang=R()*Math.PI;len=3+R()*10}
       const a=(.04+R()*.075)*power;
