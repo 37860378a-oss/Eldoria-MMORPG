@@ -15,6 +15,12 @@ Entorno de fantasía estilizado y pintado a mano: bosques frondosos, árboles co
 - El generador se aplica a los materiales creados mediante `tex()`; el terreno conserva además su sombreado procedural propio.
 - Esta revisión requiere comprobación visual dentro del navegador; el commit por sí solo no confirma el resultado en pantalla.
 
+### Perfiles arquitectónicos v5 (25/11/2026)
+- Se añadieron perfiles específicos para tejados y mampostería, identificados por color y escala de repetición del material.
+- Los tejados reciben pequeñas placas y bordes pintados; los muros, juntas de bloques y variación de pigmento.
+- Se conservan las texturas tileables de 128×128, los materiales reutilizados y la geometría existente.
+- La comprobación final de aspecto debe hacerse en el navegador; no se ha realizado una prueba visual automatizada.
+
 ## Reglas de rendimiento
 - Priorizar texturas tileables de 256 px; usar 512 px solo en superficies cercanas o elementos destacados.
 - Reutilizar materiales y texturas por bioma.
