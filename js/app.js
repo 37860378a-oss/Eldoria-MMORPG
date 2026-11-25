@@ -43,9 +43,9 @@ const trG=new T.CylinderGeometry(.25,.35,2,6),lfG=new T.ConeGeometry(1.6,4.5,7),
 const bkO=tm('#5a3d25',.4,[1,2],ln(6,'rgba(20,10,5,.65)',1)),bkB=tm('#ece8dc',.15,[1,2],x=>{x.fillStyle='#222';for(let i=0;i<14;i++)x.fillRect(R()*100,R()*128,10+R()*24,3+R()*3)}),
 lfO=[tm('#3f8a3a',.3,[2,2],blot(30,100,30,.45,40,5)),tm('#c9722a',.3,[2,2],blot(180,90,20,.45,40,5)),tm('#d8b030',.3,[2,2],blot(190,150,20,.45,40,5))],
 lfB=tm('#8fc45a',.25,[2,2],blot(100,170,60,.45,40,5)),lfP=[lfM,tm('#1f5e33',.3,[2,2],blot(15,70,35,.45,40,5))];
-function lump(r,k,sy){const g=new T.SphereGeometry(r,14,10),p=g.attributes.position,c=[],v=new T.Vector3();for(let i=0;i<p.count;i++){v.fromBufferAttribute(p,i);const n=1+(Math.sin(v.x*5.3+v.y*3.1)*Math.cos(v.z*4.7)+Math.sin(v.y*7.7+v.z*2.3)*.5)*k;v.multiplyScalar(n);p.setXYZ(i,v.x,v.y*(sy||1),v.z);const s=.6+.4*Math.min(1,Math.max(0,(v.y/r+1)/2));c.push(s,s,s)}g.setAttribute('color',new T.Float32BufferAttribute(c,3));g.computeVertexNormals();return g}
-function tier(r,h,k){const g=new T.ConeGeometry(r,h,12,3),p=g.attributes.position,c=[],v=new T.Vector3();for(let i=0;i<p.count;i++){v.fromBufferAttribute(p,i);const a=Math.atan2(v.z,v.x),w=1+(v.y<h/2-.01?Math.sin(a*7)*k:0)+Math.sin(a*13+v.y)*k*.5,dy=v.y<-h/2+.01?-Math.abs(Math.sin(a*5))*.25:0;p.setXYZ(i,v.x*w,v.y+dy,v.z*w);const s=.55+.45*(v.y/h+.5);c.push(s,s,s)}g.setAttribute('color',new T.Float32BufferAttribute(c,3));g.computeVertexNormals();return g}
-function trunkG(h,r){return new T.LatheGeometry([[1.7,0],[1.35,.18],[1.15,.25],[.9,h*.5],[.78,h*.78],[.7,h]].map(a=>new T.Vector2(r*a[0],a[1])),10)}
+function lump(r,k,sy){const g=new T.SphereGeometry(r,18,14),p=g.attributes.position,c=[],v=new T.Vector3();for(let i=0;i<p.count;i++){v.fromBufferAttribute(p,i);const n=1+(Math.sin(v.x*5.3+v.y*3.1)*Math.cos(v.z*4.7)+Math.sin(v.y*7.7+v.z*2.3)*.5)*k;v.multiplyScalar(n);p.setXYZ(i,v.x,v.y*(sy||1),v.z);const s=.6+.4*Math.min(1,Math.max(0,(v.y/r+1)/2));c.push(s,s,s)}g.setAttribute('color',new T.Float32BufferAttribute(c,3));g.computeVertexNormals();return g}
+function tier(r,h,k){const g=new T.ConeGeometry(r,h,16,4),p=g.attributes.position,c=[],v=new T.Vector3();for(let i=0;i<p.count;i++){v.fromBufferAttribute(p,i);const a=Math.atan2(v.z,v.x),w=1+(v.y<h/2-.01?Math.sin(a*7)*k:0)+Math.sin(a*13+v.y)*k*.5,dy=v.y<-h/2+.01?-Math.abs(Math.sin(a*5))*.25:0;p.setXYZ(i,v.x*w,v.y+dy,v.z*w);const s=.55+.45*(v.y/h+.5);c.push(s,s,s)}g.setAttribute('color',new T.Float32BufferAttribute(c,3));g.computeVertexNormals();return g}
+function trunkG(h,r){return new T.LatheGeometry([[1.7,0],[1.48,.12],[1.35,.18],[1.15,.25],[1.02,h*.34],[.9,h*.5],[.82,h*.68],[.78,h*.78],[.7,h]].map(a=>new T.Vector2(r*a[0],a[1])),14)}
 [lfM,lfS,lfB,lfP[1],...lfO].forEach(m=>{m.vertexColors=true;m.onBeforeCompile=s=>{s.uniforms.uT=gu;s.uniforms.uW=gwi;s.vertexShader='uniform float uT;uniform float uW;\n'+s.vertexShader.replace('#include <begin_vertex>','#include <begin_vertex>\nfloat sw=sin(uT*1.6+modelMatrix[3].x*.3+modelMatrix[3].z*.25+position.y)*.05*uW*max(position.y-1.5,0.)*.4;transformed.x+=sw;transformed.z+=sw*.6;')}});
 function mkTree(sn){const g=new T.Group(),q=R(),pk=a=>a[R()*a.length|0],M=(geo,m,x,y,z)=>{const o=new T.Mesh(geo,m);o.position.set(x,y,z);o.castShadow=true;g.add(o);return o},
 pine=(m,n,cap)=>{for(let i=0;i<n;i++){const t=i/(n-1),r=1.9*(1-t*.78),h=1.8-.1*t,y=1.9+i*.95;M(tier(r,h,.07),m,0,y,0).rotation.y=R()*6;if(cap)M(new T.ConeGeometry(r*.62,h*.5,12,2),capM,0,y+h*.27,0)}};
@@ -223,7 +223,7 @@ WALLS=[brickM,blockM,timberM,sandM,darkM,whiteM,stoneM,plasM],ROOFS=[roofB,roofR
 function bld2(cx,cz,w,d,hg,name,fz){return hse(CG,cx,cz,w,d,hg,fz,WALLS,ROOFS,name,0);const f=fz||1,zf=cz+f*(d/2+.02),wm=pk6(WALLS);box(w,hg+1.5,d,wm,cx,(hg-1.5)/2,cz,CG,1);const r=new T.Mesh(new T.ConeGeometry(Math.max(w,d)*.74,2.2+R()*1.6,4),pk6(ROOFS));r.position.set(cx,hg+1.3,cz);r.rotation.y=Math.PI/4;r.castShadow=true;CG.add(r);box(1.2,2.2,.12,dkW,cx,1.1,zf,CG);
 [-1,1].forEach(s=>{box(.8,.8,.1,winM,cx+s*(w/2-1.4),2.3,zf,CG);if(hg>4)box(.8,.8,.1,winM,cx+s*(w/2-1.4),4.3,zf,CG)});if(R()<.6){const kx=cx+w/2-.8,kz=cz-f*(d/2-.8);box(.6,hg+2.2,.6,rkM2,kx,(hg+2.2)/2,kz,CG);smk.push([kx,hg+2.4,kz])}if(f>0&&name&&R()<.5)sign(name,cx,3,zf+.15)}
 function wallS(x1,z1,x2,z2){box(Math.abs(x2-x1)||2.4,7,Math.abs(z2-z1)||2.4,stoneM,CX+(x1+x2)/2,3.5,CZ+(z1+z2)/2,CG,1)}
-function tower(x,z,r,h){const px=CX+x,pz=CZ+z,t=new T.Mesh(new T.CylinderGeometry(r,r*1.1,h,12),stoneM),c=new T.Mesh(new T.ConeGeometry(r*1.35,h*.38,12),roofB);t.position.set(px,h/2,pz);c.position.set(px,h+h*.19,pz);t.castShadow=true;CG.add(t,c);obs.push([px,pz,r+.2])}
+function tower(x,z,r,h){const px=CX+x,pz=CZ+z,t=new T.Mesh(new T.CylinderGeometry(r,r*1.1,h,16),stoneM),c=new T.Mesh(new T.ConeGeometry(r*1.35,h*.38,16),roofB);t.position.set(px,h/2,pz);c.position.set(px,h+h*.19,pz);t.castShadow=true;CG.add(t,c);obs.push([px,pz,r+.2])}
 function lamp(x,z){LUM.push([CX+x,3.4,CZ+z,1,.82,.45,5,.04,0]);const px=CX+x,pz=CZ+z,p=new T.Mesh(new T.CylinderGeometry(.08,.1,3.2,6),woodM),h=new T.Mesh(new T.SphereGeometry(.22,8,6),lampM),s=new T.Sprite(lampHalo);p.position.set(px,1.6,pz);h.position.set(px,3.3,pz);s.position.set(px,3.3,pz);s.scale.setScalar(2.6);CG.add(p,h,s)}
 function banner(x,z){const px=CX+x,pz=CZ+z,p=new T.Mesh(new T.CylinderGeometry(.1,.1,6,6),woodM),b=new T.Mesh(new T.PlaneGeometry(1.4,3),banM);p.position.set(px,3,pz);b.position.set(px,3.8,pz+.15);CG.add(p,b)}
 [[-44,-6],[6,44]].forEach(([a,b])=>{wallS(a,-44,b,-44);wallS(a,44,b,44);wallS(-44,a,-44,b);wallS(44,a,44,b)});
@@ -235,6 +235,33 @@ for(let i=0;i<8;i++){const a=i/8*6.283+.4,px=CX+Math.cos(a)*11,pz=CZ+Math.sin(a)
 [-36,-24,-12,12,24].forEach(v=>{lamp(5,v);lamp(-5,v);lamp(v,5);lamp(v,-5)});[[-5,-42],[5,-42],[-5,42],[5,42],[-42,-5],[-42,5],[42,-5],[42,5]].forEach(a=>banner(a[0],a[1]));sign('Puerto Alba',CX,5.5,CZ+44.4);
 [[-95,50,'Granja'],[88,-30,'Cabaña'],[70,70,'Cabaña'],[-120,-60,'Cabaña'],[120,120,'Cabaña'],[-70,150,'Cabaña']].forEach(a=>{bld(a[0],a[1],6,5,3,a[2]);npcAt(a[0]+2.6,a[1]+4.5,['Aldeano','Pescador','Leñador','Pastor','Viajero','Cazador'][R()*6|0],0x7a6a4a)});
 mergeStatic(CG);
+ // ===== Hitos del paisaje: molino y campamento =====
+ function windmill(x,z){
+   const g=new T.Group(),stone=mat(0x9a8060),wood=mat(0x65452b),cloth=mat(0xd8c9a5),dark=mat(0x38291e);
+   const base=new T.Mesh(new T.CylinderGeometry(1.8,2.5,5.2,12),stone);base.position.y=2.6;base.castShadow=true;g.add(base);
+   const cap=new T.Mesh(new T.ConeGeometry(2.05,1.5,12),roofT);cap.position.y=5.95;cap.castShadow=true;g.add(cap);
+   const hub=new T.Mesh(new T.CylinderGeometry(.42,.42,.75,12),wood);hub.rotation.x=Math.PI/2;hub.position.set(0,5.45,1.9);g.add(hub);
+   for(let i=0;i<4;i++){const blade=new T.Group();blade.rotation.z=i*Math.PI/2;
+     const spar=new T.Mesh(new T.BoxGeometry(.22,3.25,.18),dark);spar.position.y=1.75;blade.add(spar);
+     const sail=new T.Mesh(new T.BoxGeometry(.95,2.35,.09),cloth);sail.position.set(.34,1.8,.08);sail.rotation.z=-.12;blade.add(sail);
+     const cross=new T.Mesh(new T.BoxGeometry(.12,2.7,.12),wood);cross.position.y=1.75;blade.add(cross);
+     blade.position.set(0,5.45,2.28);g.add(blade);
+   }
+   g.position.set(x,H(x,z),z);g.rotation.y=-.35;scene.add(g);obs.push([x,z,3.1]);
+ }
+ windmill(-108,54);
+ function campProp(x,z){
+   const g=new T.Group(),wood=mat(0x68452b),stone=mat(0x77736a),iron=mat(0x383638);
+   for(let i=0;i<9;i++){const a=i*Math.PI*2/9,r=1.05,o=new T.Mesh(new T.DodecahedronGeometry(.32,1),stone);o.position.set(Math.cos(a)*r,.18,Math.sin(a)*r);o.scale.set(1,.65,1);g.add(o)}
+   const logs=[[-.55,.18,0,.3],[.55,.18,0,-.3],[0,.2,-.55,.8],[0,.2,.55,-.8]];
+   logs.forEach(v=>{const o=new T.Mesh(new T.CylinderGeometry(.11,.13,1.35,8),wood);o.position.set(v[0],v[1],v[2]);o.rotation.z=Math.PI/2;o.rotation.y=v[3];g.add(o)});
+   const flame=new T.Mesh(new T.ConeGeometry(.32,.9,9),new T.MeshBasicMaterial({color:0xff8a28}));flame.position.y=.65;g.add(flame);
+   const hook=new T.Mesh(new T.TorusGeometry(.38,.045,6,12,Math.PI),iron);hook.position.set(0,1.45,0);hook.rotation.x=Math.PI/2;g.add(hook);
+   g.position.set(x,H(x,z),z);scene.add(g);obs.push([x,z,1.5]);
+   for(let i=0;i<2;i++){const c=new T.Mesh(new T.BoxGeometry(.75,.7,.7),wood);c.position.set(x+(i?2.1:-2.1),H(x+(i?2.1:-2.1),z)+.35,z+.8);c.rotation.y=i*.4;scene.add(c);obs.push([c.position.x,z+.8,.65])}
+ }
+ campProp(143,132);
+
 // ===== Ciudadanos con vida =====
 const WK=[],NMS=['Ciudadano','Mercader','Aldeana','Campesino','Viajero','Guardia'];
 function walker(ax,fix,a,b,col){const g=human(col,{hair:[0x5a3a22,0x222222,0xcc9944,0x8a3a1a][R()*4|0]});scene.add(g);label(g,NMS[R()*6|0],'#cfe8ff',0,0,2.5);WK.push({g,ax,fix,a,b,p:a+(b-a)*R(),dir:R()<.5?1:-1,sp:1.3+R()*.9,w:0,ph:R()*6})}
@@ -250,7 +277,7 @@ function bldG(cx,cz,w,d,hg,name,fz,G,wl,rf){return hse(G,cx,cz,w,d,hg,fz,wl,rf,n
 function castleG(cx,cz,w,d,fz,G,km,rm){const f=fz||1,b=(a,h,c,m,x,y,z,k)=>box(a,h,c,m,x,y,z,G,k);b(w,12,d,km,cx,5.25,cz,1);
 for(let i=-w/2+1;i<w/2;i+=2){b(1,1.3,1,km,cx+i,12.65,cz-d/2+.5);b(1,1.3,1,km,cx+i,12.65,cz+d/2-.5)}for(let i=-d/2+2;i<d/2-1;i+=2){b(1,1.3,1,km,cx-w/2+.5,12.65,cz+i);b(1,1.3,1,km,cx+w/2-.5,12.65,cz+i)}
 b(10,8,10,km,cx,16.5,cz,1);for(let i=-4;i<=4;i+=2){b(1,1.3,1,km,cx+i,21.15,cz-4.5);b(1,1.3,1,km,cx+i,21.15,cz+4.5)}
-[[-1,-1],[1,-1],[-1,1],[1,1]].forEach(([a,c])=>{const x=cx+a*w/2,z=cz+c*d/2,t=new T.Mesh(new T.CylinderGeometry(3.2,3.5,18,12),km),k=new T.Mesh(new T.ConeGeometry(4.4,6,12),rm);t.position.set(x,9,z);k.position.set(x,21,z);t.castShadow=true;G.add(t,k);obs.push([x,z,3.6])});
+[[-1,-1],[1,-1],[-1,1],[1,1]].forEach(([a,c])=>{const x=cx+a*w/2,z=cz+c*d/2,t=new T.Mesh(new T.CylinderGeometry(3.2,3.5,18,16),km),k=new T.Mesh(new T.ConeGeometry(4.4,6,16),rm);t.position.set(x,9,z);k.position.set(x,21,z);t.castShadow=true;G.add(t,k);obs.push([x,z,3.6])});
 const zf=cz+f*(d/2+.1);b(4.4,5.5,.5,dkW,cx,2.75,zf);for(let i=-3;i<=3;i+=2)b(.8,1.8,.12,winM,cx+i*2.2,8,zf)}
 function cityBuild(cx,cz,S,name,wl,rf){const cg=new T.Group();scene.add(cg);const B=(w,h,d,m,x,y,z,c)=>box(w,h,d,m,x,y,z,cg,c),ws=(x1,z1,x2,z2)=>B(Math.abs(x2-x1)||2.4,7,Math.abs(z2-z1)||2.4,wl[0],cx+(x1+x2)/2,3.5,cz+(z1+z2)/2,1),
 tw=(x,z,r,h)=>{const px=cx+x,pz=cz+z,t=new T.Mesh(new T.CylinderGeometry(r,r*1.1,h,12),wl[0]),c=new T.Mesh(new T.ConeGeometry(r*1.35,h*.38,12),rf[0]);t.position.set(px,h/2,pz);c.position.set(px,h+h*.19,pz);t.castShadow=true;cg.add(t,c);obs.push([px,pz,r+.2])};
@@ -399,7 +426,7 @@ const onRd=(x,z)=>RKS.has(Math.floor(x/2)+','+Math.floor(z/2)),okp=(x,z,h)=>h>-1
 function inst(geo,mt,pts,sh){if(!pts.length)return;const small=geo.attributes.position.count<100,rad=small?45:110,cells=new Map();pts.forEach(q=>{const k=Math.floor(q.x/64)+','+Math.floor(q.z/64);let a=cells.get(k);if(!a)cells.set(k,a=[]);a.push(q)});const d=new T.Object3D(),c=new T.Color();
 cells.forEach(arr=>{const m=new T.InstancedMesh(geo,mt,arr.length);arr.forEach((q,i)=>{d.position.set(q.x,q.y,q.z);d.rotation.set(q.rx||0,q.ry||0,q.rz||0);d.scale.set(q.sx,q.sy||q.sx,q.sz||q.sx);d.updateMatrix();m.setMatrixAt(i,d.matrix);m.setColorAt(i,c.setHex(q.c||0xffffff))});m.castShadow=!!sh&&!small;m.frustumCulled=false;scene.add(m);OC.push({m,x:(Math.floor(arr[0].x/64)+.5)*64,z:(Math.floor(arr[0].z/64)+.5)*64,r:rad})})}
 function instOld(geo,mt,pts,sh){if(!pts.length)return;const m=new T.InstancedMesh(geo,mt,pts.length),d=new T.Object3D(),c=new T.Color();pts.forEach((q,i)=>{d.position.set(q.x,q.y,q.z);d.rotation.set(q.rx||0,q.ry||0,q.rz||0);d.scale.set(q.sx,q.sy||q.sx,q.sz||q.sx);d.updateMatrix();m.setMatrixAt(i,d.matrix);m.setColorAt(i,c.setHex(q.c||0xffffff))});m.castShadow=!!sh;m.frustumCulled=false;scene.add(m)}
-function rockG(sd){const g=new T.IcosahedronGeometry(1,2),p=g.attributes.position,c=[],v=new T.Vector3();for(let i=0;i<p.count;i++){v.fromBufferAttribute(p,i);const n=1+(Math.sin(v.x*3.1+sd)*Math.cos(v.z*2.7+sd*1.7)+Math.sin(v.y*5.3+sd*2.1)*.6)*.22;v.multiplyScalar(n);if(v.y<-.3)v.y=-.3;p.setXYZ(i,v.x,v.y,v.z);const t=.55+.45*Math.max(0,Math.min(1,(v.y+.3)/1.3));c.push(t,t,t)}g.setAttribute('color',new T.Float32BufferAttribute(c,3));g.computeVertexNormals();return g}
+function rockG(sd){const g=new T.IcosahedronGeometry(1,3),p=g.attributes.position,c=[],v=new T.Vector3();for(let i=0;i<p.count;i++){v.fromBufferAttribute(p,i);const n=1+(Math.sin(v.x*3.1+sd)*Math.cos(v.z*2.7+sd*1.7)+Math.sin(v.y*5.3+sd*2.1)*.6)*.22;v.multiplyScalar(n);if(v.y<-.3)v.y=-.3;p.setXYZ(i,v.x,v.y,v.z);const t=.55+.45*Math.max(0,Math.min(1,(v.y+.3)/1.3));c.push(t,t,t)}g.setAttribute('color',new T.Float32BufferAttribute(c,3));g.computeVertexNormals();return g}
 const rkMat=new T.MeshLambertMaterial({vertexColors:true,map:tex('#ffffff',.3,[2,2],blot(120,120,120,.25,8,10))});
 try{const rg=[0,1.7,3.3,5].map(rockG),by=[[],[],[],[]],N=MOB?1000:3300;for(let i=0;i<N;i++){const x=rnd(-376,376),z=rnd(-376,376),h=H(x,z);if(!okp(x,z,h))continue;let s,c;if(z<-45){s=rnd(1.2,4.2);c=pickc([0x9a9a9a,0x8a8a92,0xa8a49a])}else if(x>46){s=rnd(.8,2.6);c=pickc([0xc07a50,0xb06a44,0xd09060])}else if(x<SNOW){s=rnd(.8,2.8);c=pickc([0xb0c0d8,0xc8d4e8,0x9aaabd])}else{if(R()<.55)continue;s=rnd(.5,1.8);c=pickc([0x8fa07a,0x9aa890,0x7a9068])}
 by[i&3].push({x,y:h+s*.1,z,sx:s*rnd(.8,1.4),sy:s*rnd(.6,1),sz:s*rnd(.8,1.4),ry:R()*6.3,c});if(s>1.2)obs.push([x,z,s*.85])}by.forEach((p,i)=>inst(rg[i],rkMat,p,1))}catch(e){errOnce('bloque',e)}
