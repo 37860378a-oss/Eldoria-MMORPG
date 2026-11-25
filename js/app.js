@@ -260,7 +260,44 @@ mergeStatic(CG);
    g.position.set(x,H(x,z),z);scene.add(g);obs.push([x,z,1.5]);
    for(let i=0;i<2;i++){const c=new T.Mesh(new T.BoxGeometry(.75,.7,.7),wood);c.position.set(x+(i?2.1:-2.1),H(x+(i?2.1:-2.1),z)+.35,z+.8);c.rotation.y=i*.4;scene.add(c);obs.push([c.position.x,z+.8,.65])}
  }
- campProp(143,132);
+ 
+campProp(143,132);
+
+// ===== Paisaje vivo: puente, bordes naturales y ruinas =====
+function buildCreekBridge(cx,cz){
+  const g=new T.Group(),stone=mat(0x77766c),stone2=mat(0x969184),wood=tm('#76502f',.32,[1,3],ln(8,'rgba(30,15,5,.55)',1)),dark=mat(0x49321f),water=new T.MeshLambertMaterial({color:0x397eae,transparent:true,opacity:.78});
+  const stream=new T.Mesh(new T.PlaneGeometry(5.2,30),water);stream.rotation.x=-Math.PI/2;stream.position.set(cx,H(cx,cz)-.42,cz);g.add(stream);
+  for(const side of [-1,1])for(let i=0;i<9;i++){const z=cz-13+i*3.2,x=cx+side*(3.1+.18*Math.sin(i*1.7)),h=.55+(i%3)*.16,o=new T.Mesh(new T.DodecahedronGeometry(.85+(i%2)*.2,1),stone);o.position.set(x,H(x,z)+h*.25,z);o.scale.set(1.25,h,.8);o.rotation.y=i*.7;o.castShadow=true;g.add(o)}
+  for(const side of [-1,1]){const pier=new T.Mesh(new T.BoxGeometry(1.25,1.35,3.2),stone2);pier.position.set(cx+side*3.05,H(cx+side*3.05,cz)+.05,cz);pier.castShadow=true;g.add(pier)}
+  const deckY=H(cx,cz)+1.05,beam=new T.Mesh(new T.BoxGeometry(8.2,.42,2.9),dark);beam.position.set(cx,deckY,cz);beam.castShadow=true;g.add(beam);
+  for(let i=0;i<13;i++){const plank=new T.Mesh(new T.BoxGeometry(.58,.16,2.72),wood);plank.position.set(cx-3.6+i*.6,deckY+.27,cz);plank.castShadow=true;g.add(plank)}
+  for(const side of [-1,1]){const rail=new T.Mesh(new T.BoxGeometry(8.1,.18,.18),wood);rail.position.set(cx,deckY+1.05,cz+side*1.25);g.add(rail);for(let i=0;i<9;i++){const post=new T.Mesh(new T.BoxGeometry(.2,1.12,.2),dark);post.position.set(cx-3.8+i*.95,deckY+.72,cz+side*1.25);post.castShadow=true;g.add(post)}}
+  for(const side of [-1,1])for(let i=0;i<3;i++){const xx=cx+side*(4.6+i*1.1),slab=new T.Mesh(new T.BoxGeometry(2.5,.22,1.15),stone2);slab.position.set(xx,H(xx,cz)+.2,cz);g.add(slab)}
+  scene.add(g);obs.push([cx,cz,1.15]);
+}
+buildCreekBridge(50,16);
+
+function roadNature(){
+  const rockGeo=new T.DodecahedronGeometry(.52,1),bushGeo=lump(.62,.16,.72),rockData=[],bushData=[],dummy=new T.Object3D(),col=new T.Color();
+  for(const route of ROADS){if(!route||route.length<8)continue;for(let i=4;i<route.length-4;i+=5){const p=route[i],a=route[i-1],b=route[i+1],dx=b[0]-a[0],dz=b[1]-a[1],len=Math.hypot(dx,dz)||1,nx=-dz/len,nz=dx/len;
+    for(const side of [-1,1]){if(R()<.18)continue;const off=2.9+R()*1.8,x=p[0]+nx*off*side,z=p[1]+nz*off*side;if(inCity(x,z,8)||H(x,z)<-1.2||H(x,z)>13)continue;const item={x,y:H(x,z),z,rot:R()*6.28,scale:.65+R()*.75};if(R()<.58)rockData.push(item);else if(x>-42&&x<42&&z>-40&&z<210)bushData.push(item)}
+  }}
+  function instanced(geo,material,data){if(!data.length)return;const mesh=new T.InstancedMesh(geo,material,data.length);data.forEach((p,i)=>{dummy.position.set(p.x,p.y+p.scale*.28,p.z);dummy.rotation.set(0,p.rot,0);dummy.scale.set(p.scale,p.scale*(.65+R()*.35),p.scale);dummy.updateMatrix();mesh.setMatrixAt(i,dummy.matrix);if(mesh.setColorAt)mesh.setColorAt(i,col.setRGB(.82+R()*.18,.82+R()*.18,.82+R()*.18))});mesh.instanceMatrix.needsUpdate=true;if(mesh.instanceColor)mesh.instanceColor.needsUpdate=true;mesh.castShadow=false;mesh.receiveShadow=true;mesh.frustumCulled=false;scene.add(mesh)}
+  instanced(rockGeo,rkM2,rockData);instanced(bushGeo,bsM,bushData);
+}
+tryI('bordes naturales',roadNature);
+
+function ancientRuin(cx,cz){
+  const g=new T.Group(),stone=tm('#8e887b',.42,[2,1],blot(125,118,105,.28,16,9)),worn=tm('#aaa18e',.34,[1,1],blot(150,140,120,.25,12,8)),moss=tm('#526d43',.3,[2,2],blot(45,95,42,.35,18,6));
+  const add=(geo,ma,x,y,z,rx,ry,rz)=>{const o=new T.Mesh(geo,ma);o.position.set(x,y,z);o.rotation.set(rx||0,ry||0,rz||0);o.castShadow=o.receiveShadow=true;g.add(o);return o};
+  for(let i=0;i<8;i++){const a=i*Math.PI/4,rr=3.1+R()*.45,o=add(new T.BoxGeometry(2.1,.42,1.65),i%3?stone:worn,Math.cos(a)*rr,.18,Math.sin(a)*rr,0,R()*.5,0);o.scale.y=.8+R()*.4}
+  for(const side of [-1,1]){add(new T.CylinderGeometry(.62,.78,4.8,12),stone,side*2.35,2.55,0,0,0,side*.04);add(new T.CylinderGeometry(.88,.82,.42,12),worn,side*2.35,5.05,0);add(new T.BoxGeometry(1.55,.42,1.5),stone,side*2.35,5.42,0)}
+  add(new T.BoxGeometry(3.2,.55,1.15),stone,0,5.65,0,0,0,.08);add(new T.BoxGeometry(1.6,.5,1.2),worn,-1.2,6.05,0,0,0,-.18);
+  for(let i=0;i<7;i++){const x=(R()-.5)*8,z=(R()-.5)*5,ss=.55+R()*.75;add(new T.DodecahedronGeometry(ss,1),i%2?stone:worn,x,H(cx+x,cz+z)-H(cx,cz)+ss*.35,z,R()*.4,R()*6,R()*.4)}
+  for(let i=0;i<5;i++){const patch=add(new T.SphereGeometry(.65+R()*.5,10,7),moss,(R()-.5)*5,.42,(R()-.5)*3);patch.scale.y=.18}
+  g.position.set(cx,H(cx,cz),cz);g.rotation.y=-.22;scene.add(g);obs.push([cx,cz,3.4]);
+}
+ancientRuin(-178,-102);
 
 // ===== Ciudadanos con vida =====
 const WK=[],NMS=['Ciudadano','Mercader','Aldeana','Campesino','Viajero','Guardia'];
