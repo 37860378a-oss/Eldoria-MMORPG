@@ -1,5 +1,5 @@
 /* Eldoria - texturas procedurales pintadas a mano.
-   Canvas 128x128 tileable: mantiene bajo el consumo de memoria en PC modestos y Android. */
+   Canvas 128x128 tileable: perfiles visuales por material, bajo coste para PC y Android. */
 (function(){
   const SIZE=128;
   function rgbOf(hex){
@@ -8,48 +8,69 @@
     const n=parseInt(h,16);
     return Number.isFinite(n)?[(n>>16)&255,(n>>8)&255,n&255]:[119,119,119];
   }
+  function rgba(rgb,a){return 'rgba('+rgb.map(c=>Math.max(0,Math.min(255,Math.round(c))).toString()).join(',')+','+a+')'}
   function paintBase(ctx,base,variation,rand){
     const R=rand||Math.random, rgb=rgbOf(base);
     const power=Math.max(.35,Math.min(1.4,Number(variation)||.5));
-    const light='rgba('+rgb.map(c=>Math.min(255,c+Math.round((255-c)*.42))).join(',')+',';
-    const shade='rgba('+rgb.map(c=>Math.max(0,Math.round(c*.48))).join(',')+',';
+    const max=Math.max.apply(null,rgb),min=Math.min.apply(null,rgb);
+    const green=rgb[1]>rgb[0]*1.12&&rgb[1]>rgb[2]*1.04;
+    const brown=rgb[0]>rgb[1]*1.12&&rgb[1]>rgb[2]*1.08;
+    const stone=max-min<34;
+    const blue=rgb[2]>rgb[0]*1.12&&rgb[2]>rgb[1]*1.04;
+    const profile=green?'foliage':brown?'earth-wood':stone?'stone':blue?'cold':'paint';
+    const light=rgb.map(c=>Math.min(255,c+(255-c)*.42));
+    const shade=rgb.map(c=>Math.max(0,c*.48));
+    const accent=green?[Math.min(255,rgb[0]+28),Math.min(255,rgb[1]+38),Math.min(255,rgb[2]+12)]:
+      brown?[Math.min(255,rgb[0]+34),Math.min(255,rgb[1]+23),Math.min(255,rgb[2]+10)]:
+      stone?[Math.min(255,rgb[0]+24),Math.min(255,rgb[1]+24),Math.min(255,rgb[2]+24)]:
+      blue?[Math.min(255,rgb[0]+18),Math.min(255,rgb[1]+24),Math.min(255,rgb[2]+36)]:light;
     ctx.fillStyle=base;ctx.fillRect(0,0,SIZE,SIZE);
     const wrap=(x,y,draw)=>{
       for(const ox of [-SIZE,0,SIZE])for(const oy of [-SIZE,0,SIZE])draw(x+ox,y+oy);
     };
-    // Nubes de pigmento: variación amplia, sin bordes visibles al repetir la textura.
-    for(let i=0;i<34;i++){
-      const x=R()*SIZE,y=R()*SIZE,rx=5+R()*17,ry=4+R()*13,angle=(R()-.5)*.8,a=(.025+R()*.055)*power;
-      ctx.fillStyle=(R()<.54?light:shade)+a+')';
-      wrap(x,y,(px,py)=>{
-        ctx.beginPath();ctx.ellipse(px,py,rx,ry,angle,0,Math.PI*2);ctx.fill();
-      });
+    // Manchas de pigmento: más amplias en piedra y tierra, pequeñas en hojas.
+    const blotches=profile==='stone'?48:profile==='foliage'?27:36;
+    for(let i=0;i<blotches;i++){
+      const x=R()*SIZE,y=R()*SIZE;
+      const rx=(profile==='stone'?7:5)+R()*(profile==='stone'?20:15);
+      const ry=(profile==='stone'?6:4)+R()*(profile==='stone'?17:12);
+      const angle=(R()-.5)*.8,a=(.025+R()*.055)*power;
+      ctx.fillStyle=rgba(R()<.58?accent:shade,a);
+      wrap(x,y,(px,py)=>{ctx.beginPath();ctx.ellipse(px,py,rx,ry,angle,0,Math.PI*2);ctx.fill()});
     }
-    // Pinceladas medianas con extremos redondeados y dirección irregular.
+    // Dirección de pincel: vetas verticales en madera, horizontales en suelo,
+    // trazos cortos dispersos en hojas y manchas irregulares en piedra.
     ctx.lineCap='round';
     for(let i=0;i<210;i++){
-      const x=R()*SIZE,y=R()*SIZE,len=3+R()*13,ang=(R()-.5)*1.7;
-      const a=(.045+R()*.085)*power;
-      ctx.strokeStyle=(R()<.56?light:shade)+a+')';
-      ctx.lineWidth=.7+R()*2.1;
+      const x=R()*SIZE,y=R()*SIZE;
+      let ang=(R()-.5)*1.7,len=3+R()*13;
+      if(profile==='earth-wood'){ang=Math.PI/2+(R()-.5)*.38;len=4+R()*18}
+      else if(profile==='earth-wood'&&rgb[0]>rgb[1]*1.25){ang=(R()-.5)*.32}
+      else if(profile==='foliage'){ang=(R()-.5)*2.6;len=2+R()*8}
+      else if(profile==='stone'){ang=R()*Math.PI;len=3+R()*10}
+      const a=(.04+R()*.075)*power;
+      ctx.strokeStyle=rgba(R()<.56?accent:shade,a);
+      ctx.lineWidth=profile==='stone'?.8+R()*2.2:.7+R()*(profile==='foliage'?1.3:2.1);
       wrap(x,y,(px,py)=>{
         ctx.beginPath();ctx.moveTo(px,py);
         ctx.quadraticCurveTo(px+Math.cos(ang)*len*.55+1,py+Math.sin(ang)*len*.55-1,px+Math.cos(ang)*len,py+Math.sin(ang)*len);
         ctx.stroke();
       });
     }
-    // Pequeños toques de pigmento que dan lectura artesanal sin ruido excesivo.
-    for(let i=0;i<260;i++){
-      const x=R()*SIZE,y=R()*SIZE,w=.8+R()*2.4,h=.6+R()*1.8,a=(.035+R()*.075)*power;
-      ctx.fillStyle=(R()<.5?light:shade)+a+')';
+    // Puntos y pequeñas pinceladas, con densidad según material.
+    const flecks=profile==='foliage'?190:profile==='stone'?310:250;
+    for(let i=0;i<flecks;i++){
+      const x=R()*SIZE,y=R()*SIZE,w=.8+R()*(profile==='stone'?3:2.4),h=.6+R()*(profile==='foliage'?1.4:2.2);
+      const a=(.03+R()*.07)*power;
+      ctx.fillStyle=rgba(R()<.5?accent:shade,a);
       wrap(x,y,(px,py)=>ctx.fillRect(px,py,w,h));
     }
-    // Grano fino y discreto para romper superficies demasiado lisas.
-    for(let i=0;i<420;i++){
-      const x=R()*SIZE,y=R()*SIZE,a=R()*.075*power;
+    // Grano fino de baja opacidad.
+    for(let i=0;i<380;i++){
+      const x=R()*SIZE,y=R()*SIZE,a=R()*.065*power;
       ctx.fillStyle=(R()<.5?'rgba(255,255,255,':'rgba(0,0,0,')+a+')';
       ctx.fillRect(x,y,.5+R()*1.1,.5+R()*1.1);
     }
   }
-  window.EldoriaTextures={paintBase:paintBase,size:SIZE,style:'painterly-tileable-v2'};
+  window.EldoriaTextures={paintBase:paintBase,size:SIZE,style:'painterly-material-profiles-v3'};
 })();
