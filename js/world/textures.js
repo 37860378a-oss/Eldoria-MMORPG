@@ -66,6 +66,35 @@
       ctx.fillStyle=rgba(R()<.5?accent:shade,a);
       wrap(x,y,(px,py)=>ctx.fillRect(px,py,w,h));
     }
+    // Rasgos de pincel grandes: siluetas visibles al jugar, no ruido fotográfico.
+    for(let i=0;i<72;i++){
+      const x=R()*SIZE,y=R()*SIZE;
+      const tone=R()<.62?accent:light;
+      const alpha=(.10+R()*.12)*power;
+      if(profile==='foliage'){
+        const ang=(R()-.5)*1.4,len=7+R()*13;
+        ctx.fillStyle=rgba(tone,alpha);
+        wrap(x,y,(px,py)=>{
+          ctx.save();ctx.translate(px,py);ctx.rotate(ang);
+          for(let j=0;j<3;j++){
+            ctx.beginPath();ctx.ellipse((j-1)*len*.42,(R()-.5)*5,2.2+R()*2.8,5+R()*5,0,0,Math.PI*2);ctx.fill();
+          }
+          ctx.restore();
+        });
+      }else if(profile==='wood'){
+        const yy=y,xx=x,span=12+R()*30;
+        ctx.strokeStyle=rgba(R()<.7?shade:accent,alpha+.05);ctx.lineWidth=1.5+R()*2.5;
+        wrap(xx,yy,(px,py)=>{ctx.beginPath();ctx.moveTo(px,py);ctx.quadraticCurveTo(px+(R()-.5)*3,py+span*.5,px+(R()-.5)*3,py+span);ctx.stroke()});
+      }else if(profile==='stone'){
+        const w=5+R()*15,h=3+R()*9;
+        ctx.fillStyle=rgba(tone,alpha);
+        wrap(x,y,(px,py)=>{ctx.beginPath();ctx.moveTo(px-w,py-h*.2);ctx.lineTo(px-w*.25,py-h);ctx.lineTo(px+w,py-h*.35);ctx.lineTo(px+w*.55,py+h*.8);ctx.lineTo(px-w*.7,py+h);ctx.closePath();ctx.fill()});
+      }else{
+        const span=8+R()*18,ang=(R()-.5)*.3;
+        ctx.strokeStyle=rgba(tone,alpha);ctx.lineWidth=2+R()*3;
+        wrap(x,y,(px,py)=>{ctx.beginPath();ctx.moveTo(px,py);ctx.quadraticCurveTo(px+span*.5,py+Math.sin(ang)*span*.5,px+span,py+Math.sin(ang)*span);ctx.stroke()});
+      }
+    }
     // Grano fino de baja opacidad.
     for(let i=0;i<240;i++){
       const x=R()*SIZE,y=R()*SIZE,a=R()*.045*power;
@@ -73,5 +102,5 @@
       ctx.fillRect(x,y,.5+R()*1.1,.5+R()*1.1);
     }
   }
-  window.EldoriaTextures={paintBase:paintBase,size:SIZE,style:'painterly-material-profiles-v4-hd-256'};
+  window.EldoriaTextures={paintBase:paintBase,size:SIZE,style:'painterly-material-profiles-v5-wow-painterly'};
 })();
