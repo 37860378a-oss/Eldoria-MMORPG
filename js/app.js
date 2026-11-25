@@ -339,7 +339,7 @@ const d=new T.Object3D(),col=new T.Color(),c2=new T.Color(0xd8e8a0);cells.forEac
 
 const skyU={uTop:{value:new T.Color(0x1f5bb8)},uHor:{value:new T.Color(0x9cc8f0)},uT:{value:0},uDay:{value:1},uCl:{value:0},uSun:{value:new T.Vector3(0,1,0)}};
 const sky=new T.Mesh(new T.SphereGeometry(290,32,16),new T.MeshBasicMaterial({color:0x87b7e6,side:T.BackSide,depthWrite:false}));sky.renderOrder=-10;sky.frustumCulled=false;scene.add(sky);
-let fr=0;function cull(){if(++fr%12)return;TC.forEach(c=>c.g.visible=Math.hypot(c.x-P.x,c.z-P.z)<90+120*CFG.view);GM.forEach(g=>g.m.visible=Math.hypot(g.x-P.x,g.z-P.z)<38+52*CFG.dens);OC.forEach(c=>c.m.visible=Math.hypot(c.x-P.x,c.z-P.z)<c.r*CFG.dens+45);/* Las edificaciones se mantienen visibles: el culling por distancia ocultaba zonas completas al desplazarse por el mapa. */CG.visible=true;CG.traverse(o=>{if(o.isMesh||o.isSprite)o.frustumCulled=false});CITYG.forEach(c=>{c.g.visible=true;c.g.traverse(o=>{if(o.isMesh||o.isSprite)o.frustumCulled=false})})}
+let fr=0;function cull(){if(++fr%12)return;TC.forEach(c=>c.g.visible=Math.hypot(c.x-P.x,c.z-P.z)<90+120*CFG.view);GM.forEach(g=>g.m.visible=Math.hypot(g.x-P.x,g.z-P.z)<38+52*CFG.dens);OC.forEach(c=>c.m.visible=Math.hypot(c.x-P.x,c.z-P.z)<c.r*CFG.dens+45);/* Visibilidad explícita para todos los sistemas de edificios. */CG.visible=true;CG.traverse(o=>{if(o.isMesh||o.isSprite){o.visible=true;o.frustumCulled=false}});CITYG.forEach(c=>{c.g.visible=true;c.g.traverse(o=>{if(o.isMesh||o.isSprite){o.visible=true;o.frustumCulled=false}})});HORDE_BUILDINGS.forEach(g=>{g.visible=true;g.traverse(o=>{if(o.isMesh||o.isSprite){o.visible=true;o.frustumCulled=false}})})}
 [[-15,-8,6,5,4,'Herrería'],[15,-8,6,5,4,'Gremio'],[-15,6,6,5,4,'Taberna'],[15,6,6,5,4,'Biblioteca'],[-15,19,6,5,4,'Casa'],[15,19,6,5,4,'Casa'],[0,19,10,6,5,'Ayuntamiento']].forEach(a=>0);
 [].forEach(([x,z])=>{const px=CX+x,pz=CZ+z,y=H(px,pz),t=new T.Mesh(new T.CylinderGeometry(1.4,1.7,8,10),stM),c=new T.Mesh(new T.ConeGeometry(2,2.5,10),roofM),o=new T.Mesh(new T.SphereGeometry(.35,8,6),new T.MeshBasicMaterial({color:0x66ccff}));t.position.set(px,y+4,pz);t.castShadow=true;c.position.set(px,y+9.2,pz);o.position.set(px,y+10.8,pz);scene.add(t,c,o);obs.push([px,pz,1.8])});
 try{const fx=CX,fz=CZ+2,y=H(fx,fz),b=new T.Mesh(new T.CylinderGeometry(2.4,2.6,.7,20),stM),w=new T.Mesh(new T.CylinderGeometry(2.1,2.1,.1,20),new T.MeshBasicMaterial({color:0x4aa8ff})),p=new T.Mesh(new T.CylinderGeometry(.3,.4,2.2,10),stM),o=new T.Mesh(new T.SphereGeometry(.45,12,10),new T.MeshBasicMaterial({color:0x9fe8ff}));b.position.set(fx,y+.35,fz);w.position.set(fx,y+.72,fz);p.position.set(fx,y+1.1,fz);o.position.set(fx,y+2.5,fz);fountainBig(scene,fx,fz,y);obs.push([fx,fz,5.8]);FOUNT.push([fx,fz])}catch(e){errOnce('bloque',e)}
@@ -485,7 +485,7 @@ const FFN=140,ffp=new Float32Array(FFN*3),ffc=new Float32Array(FFN*3),ffs=[];for
 const ffg=new T.BufferGeometry();ffg.setAttribute('position',new T.BufferAttribute(ffp,3));ffg.setAttribute('color',new T.BufferAttribute(ffc,3));const ffm=new T.Points(ffg,new T.PointsMaterial({size:.35,map:glow,vertexColors:true,transparent:true,depthWrite:false,blending:T.AdditiveBlending}));ffm.frustumCulled=false;scene.add(ffm);
 function ffUpd(dt,t){const v=inValley(P.x,P.z)&&!inCity(P.x,P.z,0);ffm.visible=v;if(!v)return;const night=1-dayF;for(let i=0;i<FFN;i++){const f=ffs[i];f.a+=f.s*dt*.5;const x=P.x+Math.cos(f.a+Math.sin(t*.3+f.p))*f.r,z=P.z+Math.sin(f.a)*f.r;ffp[i*3]=x;ffp[i*3+1]=H(x,z)+f.y+Math.sin(t*2+f.p)*.5;ffp[i*3+2]=z;const bc=night>.5?[.7,1,.3]:[[1,.5,.3],[1,.9,.3],[.6,.7,1],[1,1,1]][i%4],bl=night>.5?.5+.5*Math.sin(t*3+f.p):(dayF>.5?.9:.2);ffc[i*3]=bc[0]*bl;ffc[i*3+1]=bc[1]*bl;ffc[i*3+2]=bc[2]*bl}ffg.attributes.position.needsUpdate=ffg.attributes.color.needsUpdate=true}
 
-const FIRE=[[3,6],[27,21]];
+const FIRE=[[3,6],[27,21]],HORDE_BUILDINGS=[];
 // Edificaciones visibles del campamento de la Horda.
 // Se crean directamente en scene para no depender del grupo fusionado de la ciudad.
 function hordeHut(x,z,w,d,h,roofColor){
@@ -497,7 +497,7 @@ function hordeHut(x,z,w,d,h,roofColor){
  for(const side of [-1,1]){const post=new T.Mesh(new T.CylinderGeometry(.14,.18,h+.8,8),wood);post.position.set(side*(w/2-.25),h/2+.35,d/2+.12);post.castShadow=true;g.add(post)}
  const bannerPole=new T.Mesh(new T.CylinderGeometry(.07,.1,3.7,8),iron);bannerPole.position.set(w*.35,h+3.1,0);g.add(bannerPole);
  const flag=new T.Mesh(new T.PlaneGeometry(1.25,1.9),new T.MeshLambertMaterial({color:0x9b241d,side:T.DoubleSide}));flag.position.set(w*.35+.58,h+3.35,0);g.add(flag);
- g.position.set(x,y,z);scene.add(g);obs.push([x,z,Math.max(w,d)*.62]);
+ g.position.set(x,y,z);scene.add(g);HORDE_BUILDINGS.push(g);obs.push([x,z,Math.max(w,d)*.62]);
 }
 function hordeWatchtower(x,z){
  const g=new T.Group(),wood=tm('#65432a',.35,[2,2],ln(9,'rgba(25,12,5,.65)',1)),hide=tm('#8c5935',.3,[2,2],blot(120,82,48,.25,12,8)),iron=mat(0x39312a),y=H(x,z);
@@ -507,7 +507,7 @@ function hordeWatchtower(x,z){
  const hut=new T.Mesh(new T.BoxGeometry(3.2,1.6,3.2),hide);hut.position.y=6.55;g.add(hut);
  const roof=new T.Mesh(new T.ConeGeometry(2.6,1.7,4),iron);roof.position.y=8.2;roof.rotation.y=Math.PI/4;g.add(roof);
  const fire=new T.Mesh(new T.SphereGeometry(.32,10,8),new T.MeshBasicMaterial({color:0xff8a22}));fire.position.set(0,9.15,0);g.add(fire);
- g.position.set(x,y,z);scene.add(g);obs.push([x,z,2.2]);
+ g.position.set(x,y,z);scene.add(g);HORDE_BUILDINGS.push(g);obs.push([x,z,2.2]);
 }
 hordeHut(22,31,7,6,3.8,'#783a2c');
 hordeHut(37,34,6,5,3.2,'#8a4a2e');
