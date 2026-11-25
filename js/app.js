@@ -52,7 +52,7 @@ pine=(m,n,cap)=>{for(let i=0;i<n;i++){const t=i/(n-1),r=1.9*(1-t*.78),h=1.8-.1*t
 if(sn&&q<.7){M(trunkG(2.4,.28),trM,0,0,0);pine(lfS,5,1)}
 else if(sn){M(trunkG(4.2,.25),bkO,0,0,0);for(let k=0;k<6;k++){const pv=new T.Group();pv.position.y=1.6+k*.45;pv.rotation.y=k*2.4;g.add(pv);const b=new T.Mesh(new T.CylinderGeometry(.04,.09,1.5,5),bkO);b.position.set(.5,.35,0);b.rotation.z=-1-R()*.3;b.castShadow=true;pv.add(b)}}
 else if(q<.4){M(trunkG(2.4,.28),trM,0,0,0);pine(pk(lfP),5,0)}
-else if(q<.75){M(trunkG(2.8,.34),bkO,0,0,0);const m=pk(lfO);[[0,3.7,0,1.7,.85],[1.1,3.3,.5,1.2,1],[-1.1,3.4,-.6,1.3,1],[.3,4.6,.3,1.2,1],[-.6,3.1,1,1.1,1],[.8,3.2,-1,1.1,1]].forEach(a=>M(lump(a[3],.14,a[4]),m,a[0],a[1],a[2]))}
+else if(q<.75){M(trunkG(2.8,.34),bkO,0,0,0);const m=pk(lfO);[[0,3.7,0,1.7,.85],[1.1,3.3,.5,1.2,1],[-1.1,3.4,-.6,1.3,1],[.3,4.6,.3,1.2,1],[-.6,3.1,1,1.1,1],[.8,3.2,-1,1.1,1],[1.25,4.05,-.65,.88,1.05],[-1.25,4.05,.7,.92,.95]].forEach(a=>M(lump(a[3],.14,a[4]),m,a[0],a[1],a[2]))}
 else{M(trunkG(4,.17),bkB,0,0,0);[[0,4.4,0,1,1.25],[.55,3.5,.2,.75,1.2],[-.5,3.9,-.2,.8,1.2],[.1,5.1,.1,.6,1.2]].forEach(a=>M(lump(a[3],.12,a[4]),lfB,a[0],a[1],a[2]))}
 const og=mergeTree(g,1);og.rotation.y=R()*6.28;return og}
 function mergeTreeOld(g){g.updateMatrixWorld(true);const by=new Map(),out=new T.Group();g.traverse(o=>{if(o.isMesh){const a=by.get(o.material)||[];a.push(o);by.set(o.material,a)}});
