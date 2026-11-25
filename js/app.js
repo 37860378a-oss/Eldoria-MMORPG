@@ -705,7 +705,7 @@ for(let i=0;i<total*6&&cnt<total;i++){const x=rnd(-376,376),z=rnd(-376,376),zone
 let gi=zone==0?0:zone==1?2:zone==2?1:(R()<.5?0:1);if(zone==2&&h<8&&R()<.5)gi=0;const key=Math.floor(x/32)+','+Math.floor(z/32),mp=cells[gi];let c=mp.get(key);if(!c){c={x:(Math.floor(x/32)+.5)*32,z:(Math.floor(z/32)+.5)*32,a:[]};mp.set(key,c)}c.a.push([x,z,h]);cnt++}
 const d=new T.Object3D(),col=new T.Color(),c2=new T.Color(0xd8e8a0);cells.forEach((mp,gi)=>mp.forEach(c=>{const m=new T.InstancedMesh(geos[gi],gm,c.a.length);c.a.forEach((p,k)=>{const L=R()<.3?.35+R()*.3:.7+R()*1.1,s0=.6+R()*.8;d.position.set(p[0],p[2]-.02,p[1]);d.rotation.set((R()-.5)*.3,R()*6.3,(R()-.5)*.3);d.scale.set(s0,L,s0*(.7+R()*.6));d.updateMatrix();m.setMatrixAt(k,d.matrix);m.setColorAt(k,col.setHex(0xffffff).lerp(c2,R()*.7))});m.frustumCulled=false;scene.add(m);GM.push({m,x:c.x,z:c.z})}))}
  // Arbustos bajos por grupos: aportan capas al bosque con pocas llamadas de dibujo.
- const shrubCells=new Map(),shrubTotal=MOB?85:230,shrubGeo=new T.IcosahedronGeometry(1,1),shrubMat=new T.MeshLambertMaterial({color:0xffffff});
+ const shrubCells=new Map(),shrubTotal=MOB?85:230,shrubGeo=new T.IcosahedronGeometry(1,1),shrubMat=new T.MeshLambertMaterial({color:0xffffff});let shrubCount=0;
  for(let i=0;i<shrubTotal*5;i++){
    const x=rnd(-370,370),z=rnd(-370,370),h=H(x,z),zone=z<-45?3:x<-45?1:x>45?2:0;
    if(h<-1||h>(zone===3?13:25)||Math.hypot(x,z)<20||inCity(x,z,5)||onRd(x,z)||Math.abs(H(x+1,z)-h)>.65)continue;
@@ -713,7 +713,7 @@ const d=new T.Object3D(),col=new T.Color(),c2=new T.Color(0xd8e8a0);cells.forEac
    const key=Math.floor(x/32)+','+Math.floor(z/32);
    let cell=shrubCells.get(key);if(!cell){cell={x:(Math.floor(x/32)+.5)*32,z:(Math.floor(z/32)+.5)*32,items:[]};shrubCells.set(key,cell)}
    cell.items.push({x,z,h,scale:.55+R()*.75,tone:R()});
-   if([...shrubCells.values()].reduce((n,c)=>n+c.items.length,0)>=shrubTotal)break;
+   if(++shrubCount>=shrubTotal)break;
  }
  const shrubDummy=new T.Object3D(),shrubColor=new T.Color();
  shrubCells.forEach(cell=>{
