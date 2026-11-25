@@ -1,7 +1,7 @@
 /* Eldoria - texturas procedurales pintadas a mano.
-   Canvas 128x128 tileable: perfiles visuales por material, bajo coste para PC y Android. */
+   Canvas 256x256 tileable: perfiles visuales por material, bajo coste para PC y Android. */
 (function(){
-  const SIZE=128;
+  const SIZE=256;
   function rgbOf(hex){
     let h=String(hex||'#777777').replace('#','').trim();
     if(h.length===3)h=h.split('').map(c=>c+c).join('');
@@ -18,11 +18,10 @@
     const stone=max-min<34;
     const blue=rgb[2]>rgb[0]*1.12&&rgb[2]>rgb[1]*1.04;
     const verticalGrain=!!(repeat&&repeat[1]>repeat[0]*1.35);
-    const roof=!!(repeat&&repeat[0]>=4&&repeat[1]>=2),brick=!!(repeat&&repeat[0]>=2&&repeat[0]<=3&&repeat[1]<=1.2&&rgb[0]>rgb[1]*1.18&&rgb[0]>rgb[2]*1.18);
-    const profile=roof?'roof':stone?'stone':brick?'wall':green?'foliage':brown?(verticalGrain?'wood':'earth'):blue?'cold':'paint';
+    const profile=green?'foliage':brown?(verticalGrain?'wood':'earth'):stone?'stone':blue?'cold':'paint';
     const light=rgb.map(c=>Math.min(255,c+(255-c)*.42));
     const shade=rgb.map(c=>Math.max(0,c*.48));
-    const accent=profile==='roof'?[Math.min(255,rgb[0]+42),Math.min(255,rgb[1]+34),Math.min(255,rgb[2]+25)]:profile==='wall'?[Math.min(255,rgb[0]+34),Math.min(255,rgb[1]+30),Math.min(255,rgb[2]+25)]:green?[Math.min(255,rgb[0]+28),Math.min(255,rgb[1]+38),Math.min(255,rgb[2]+12)]:
+    const accent=green?[Math.min(255,rgb[0]+28),Math.min(255,rgb[1]+38),Math.min(255,rgb[2]+12)]:
       brown?[Math.min(255,rgb[0]+34),Math.min(255,rgb[1]+23),Math.min(255,rgb[2]+10)]:
       stone?[Math.min(255,rgb[0]+24),Math.min(255,rgb[1]+24),Math.min(255,rgb[2]+24)]:
       blue?[Math.min(255,rgb[0]+18),Math.min(255,rgb[1]+24),Math.min(255,rgb[2]+36)]:light;
@@ -31,7 +30,7 @@
       for(const ox of [-SIZE,0,SIZE])for(const oy of [-SIZE,0,SIZE])draw(x+ox,y+oy);
     };
     // Manchas de pigmento: más amplias en piedra y tierra, pequeñas en hojas.
-    const blotches=profile==='stone'?34:profile==='foliage'?30:profile==='roof'?26:profile==='wall'?30:38;
+    const blotches=profile==='stone'?34:profile==='foliage'?30:38;
     for(let i=0;i<blotches;i++){
       const x=R()*SIZE,y=R()*SIZE;
       const rx=(profile==='stone'?9:7)+R()*(profile==='stone'?24:20);
@@ -40,32 +39,13 @@
       ctx.fillStyle=rgba(R()<.58?accent:shade,a);
       wrap(x,y,(px,py)=>{ctx.beginPath();ctx.ellipse(px,py,rx,ry,angle,0,Math.PI*2);ctx.fill()});
     }
-    // Relieve pintado para tejados y mampostería: patrón suave, sin geometría extra.
-    if(profile==='roof'){
-      for(let y=5;y<SIZE+12;y+=15){
-        const offset=((Math.floor(y/15)%2)*10);
-        for(let x=-12+offset;x<SIZE+12;x+=22){
-          ctx.fillStyle=rgba(R()<.5?accent:shade,.16*power);
-          ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x+20,y);ctx.lineTo(x+18,y+10);ctx.quadraticCurveTo(x+9,y+13,x+1,y+10);ctx.closePath();ctx.fill();
-          ctx.strokeStyle=rgba(shade,.24*power);ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(x+1,y+10);ctx.quadraticCurveTo(x+10,y+13,x+18,y+10);ctx.stroke();
-        }
-      }
-    } else if(profile==='wall'){
-      for(let y=0;y<SIZE;y+=22){
-        const offset=((Math.floor(y/22)%2)*16);
-        ctx.strokeStyle=rgba(shade,.22*power);ctx.lineWidth=1.2;
-        ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(SIZE,y);
-        for(let x=offset;x<SIZE;x+=34){ctx.moveTo(x,y);ctx.lineTo(x,y+22)}
-        ctx.stroke();
-      }
-    }
     // Dirección de pincel: vetas verticales en madera, horizontales en suelo,
     // trazos cortos dispersos en hojas y manchas irregulares en piedra.
     ctx.lineCap='round';
     for(let i=0;i<210;i++){
       const x=R()*SIZE,y=R()*SIZE;
       let ang=(R()-.5)*1.7,len=5+R()*19;
-      if(profile==='wood'){ang=Math.PI/2+(R()-.5)*.30;len=8+R()*25}\n      else if(profile==='roof'){ang=(R()-.5)*.18;len=7+R()*18}\n      else if(profile==='wall'){ang=(R()-.5)*.35;len=5+R()*13}
+      if(profile==='wood'){ang=Math.PI/2+(R()-.5)*.30;len=8+R()*25}
       else if(profile==='earth'){ang=(R()-.5)*.22;len=9+R()*24}
       else if(profile==='foliage'){ang=(R()-.5)*2.6;len=4+R()*12}
       else if(profile==='stone'){ang=R()*Math.PI;len=5+R()*15}
@@ -79,7 +59,7 @@
       });
     }
     // Puntos y pequeñas pinceladas, con densidad según material.
-    const flecks=profile==='foliage'?145:profile==='stone'?210:profile==='roof'?120:profile==='wall'?150:175;
+    const flecks=profile==='foliage'?145:profile==='stone'?210:175;
     for(let i=0;i<flecks;i++){
       const x=R()*SIZE,y=R()*SIZE,w=.8+R()*(profile==='stone'?3:2.4),h=.6+R()*(profile==='foliage'?1.4:2.2);
       const a=(.07+R()*.12)*power;
@@ -93,5 +73,5 @@
       ctx.fillRect(x,y,.5+R()*1.1,.5+R()*1.1);
     }
   }
-  window.EldoriaTextures={paintBase:paintBase,size:SIZE,style:'painterly-material-profiles-v5-architecture'};
+  window.EldoriaTextures={paintBase:paintBase,size:SIZE,style:'painterly-material-profiles-v4-hd-256'};
 })();
