@@ -234,7 +234,8 @@ bld2(CX+31,CZ-31,16,14,10,'Catedral',1);tower(31,-38,2.2,17);castleG(CX,CZ+34,26
 for(let i=0;i<8;i++){const a=i/8*6.283+.4,px=CX+Math.cos(a)*11,pz=CZ+Math.sin(a)*11+2;box(2.4,.9,1.2,woodM,px,.45,pz,CG,1);const aw=new T.Mesh(new T.BoxGeometry(2.8,.1,1.8),new T.MeshLambertMaterial({color:[0xc0392b,0x2a5db0,0xe0a020,0x2e8b57][i%4]}));aw.position.set(px,2.3,pz);CG.add(aw);if(i%2==0)npcAt(px,pz-1.5,'Mercader',[0x8a4a2a,0x4a6a8a,0x8a2a4a,0x6a8a2a][i/2]||0x777777)}
 [-36,-24,-12,12,24].forEach(v=>{lamp(5,v);lamp(-5,v);lamp(v,5);lamp(v,-5)});[[-5,-42],[5,-42],[-5,42],[5,42],[-42,-5],[-42,5],[42,-5],[42,5]].forEach(a=>banner(a[0],a[1]));sign('Puerto Alba',CX,5.5,CZ+44.4);
 [[-95,50,'Granja'],[88,-30,'Cabaña'],[70,70,'Cabaña'],[-120,-60,'Cabaña'],[120,120,'Cabaña'],[-70,150,'Cabaña']].forEach(a=>{bld(a[0],a[1],6,5,3,a[2]);npcAt(a[0]+2.6,a[1]+4.5,['Aldeano','Pescador','Leñador','Pastor','Viajero','Cazador'][R()*6|0],0x7a6a4a)});
-mergeStatic(CG);
+// Se conservan las edificaciones de Puerto Alba como meshes independientes.
+// Evita que la fusión estática oculte geometrías en ciertos equipos/drivers WebGL.
  // ===== Hitos del paisaje: molino y campamento =====
  function windmill(x,z){
    const g=new T.Group(),stone=mat(0x9a8060),wood=mat(0x65452b),cloth=mat(0xd8c9a5),dark=mat(0x38291e);
@@ -483,7 +484,37 @@ for(const b of BRD){b.a+=b.s*dt;const x=b.cx+Math.cos(b.a)*b.r,z=b.cz+Math.sin(b
 const FFN=140,ffp=new Float32Array(FFN*3),ffc=new Float32Array(FFN*3),ffs=[];for(let i=0;i<FFN;i++)ffs.push({a:R()*6.3,r:rnd(3,26),y:rnd(.6,3),s:rnd(.3,.9),p:R()*6.3});
 const ffg=new T.BufferGeometry();ffg.setAttribute('position',new T.BufferAttribute(ffp,3));ffg.setAttribute('color',new T.BufferAttribute(ffc,3));const ffm=new T.Points(ffg,new T.PointsMaterial({size:.35,map:glow,vertexColors:true,transparent:true,depthWrite:false,blending:T.AdditiveBlending}));ffm.frustumCulled=false;scene.add(ffm);
 function ffUpd(dt,t){const v=inValley(P.x,P.z)&&!inCity(P.x,P.z,0);ffm.visible=v;if(!v)return;const night=1-dayF;for(let i=0;i<FFN;i++){const f=ffs[i];f.a+=f.s*dt*.5;const x=P.x+Math.cos(f.a+Math.sin(t*.3+f.p))*f.r,z=P.z+Math.sin(f.a)*f.r;ffp[i*3]=x;ffp[i*3+1]=H(x,z)+f.y+Math.sin(t*2+f.p)*.5;ffp[i*3+2]=z;const bc=night>.5?[.7,1,.3]:[[1,.5,.3],[1,.9,.3],[.6,.7,1],[1,1,1]][i%4],bl=night>.5?.5+.5*Math.sin(t*3+f.p):(dayF>.5?.9:.2);ffc[i*3]=bc[0]*bl;ffc[i*3+1]=bc[1]*bl;ffc[i*3+2]=bc[2]*bl}ffg.attributes.position.needsUpdate=ffg.attributes.color.needsUpdate=true}
-const FIRE=[[3,6],[27,21]];{const t1=tm('#8a3b2a',.3,[2,2],ln(10,'rgba(30,10,5,.5)')),t2=tm('#6a4a2a',.3,[2,2],ln(10,'rgba(20,10,5,.5)'));[[30,17,t1],[34,24,t2],[24,25,t1]].forEach(([x,z,m])=>{const t=new T.Mesh(new T.ConeGeometry(2.4,3.2,7),m);t.position.set(x,H(x,z)+1.6,z);t.castShadow=true;scene.add(t);obs.push([x,z,2.3])});FIRE.forEach(([x,z])=>{const l=new T.Mesh(new T.CylinderGeometry(.5,.6,.3,8),mat(0x3a2a1a));l.position.set(x,H(x,z)+.15,z);scene.add(l)});
+
+const FIRE=[[3,6],[27,21]];
+// Edificaciones visibles del campamento de la Horda.
+// Se crean directamente en scene para no depender del grupo fusionado de la ciudad.
+function hordeHut(x,z,w,d,h,roofColor){
+ const g=new T.Group(),wood=tm('#68452f',.35,[2,2],ln(10,'rgba(25,12,5,.65)',1)),hide=tm('#8a633d',.3,[2,2],blot(120,82,48,.28,12,8)),roof=tm(roofColor,.3,[2,2],ln(12,'rgba(30,15,8,.55)',1)),iron=mat(0x39312a);
+ const y=H(x,z),floor=new T.Mesh(new T.BoxGeometry(w+.5,.35,d+.5),wood);floor.position.set(0,.18,0);g.add(floor);
+ const wall=new T.Mesh(new T.BoxGeometry(w,h,d),hide);wall.position.set(0,h/2+.3,0);wall.castShadow=true;g.add(wall);
+ const top=new T.Mesh(new T.ConeGeometry(Math.max(w,d)*.78,2.7,5),roof);top.position.y=h+1.65;top.rotation.y=Math.PI/5;top.castShadow=true;g.add(top);
+ const door=new T.Mesh(new T.BoxGeometry(1.25,2.25,.16),iron);door.position.set(0,1.42,d/2+.09);g.add(door);
+ for(const side of [-1,1]){const post=new T.Mesh(new T.CylinderGeometry(.14,.18,h+.8,8),wood);post.position.set(side*(w/2-.25),h/2+.35,d/2+.12);post.castShadow=true;g.add(post)}
+ const bannerPole=new T.Mesh(new T.CylinderGeometry(.07,.1,3.7,8),iron);bannerPole.position.set(w*.35,h+3.1,0);g.add(bannerPole);
+ const flag=new T.Mesh(new T.PlaneGeometry(1.25,1.9),new T.MeshLambertMaterial({color:0x9b241d,side:T.DoubleSide}));flag.position.set(w*.35+.58,h+3.35,0);g.add(flag);
+ g.position.set(x,y,z);scene.add(g);obs.push([x,z,Math.max(w,d)*.62]);
+}
+function hordeWatchtower(x,z){
+ const g=new T.Group(),wood=tm('#65432a',.35,[2,2],ln(9,'rgba(25,12,5,.65)',1)),hide=tm('#8c5935',.3,[2,2],blot(120,82,48,.25,12,8)),iron=mat(0x39312a),y=H(x,z);
+ const legs=[[-1.25,-1.25],[1.25,-1.25],[-1.25,1.25],[1.25,1.25]];
+ legs.forEach(([a,b])=>{const p=new T.Mesh(new T.CylinderGeometry(.16,.22,6.5,8),wood);p.position.set(a,3.25,b);p.rotation.z=a*.035;p.castShadow=true;g.add(p)});
+ const deck=new T.Mesh(new T.BoxGeometry(3.7,.35,3.7),wood);deck.position.y=5.6;g.add(deck);
+ const hut=new T.Mesh(new T.BoxGeometry(3.2,1.6,3.2),hide);hut.position.y=6.55;g.add(hut);
+ const roof=new T.Mesh(new T.ConeGeometry(2.6,1.7,4),iron);roof.position.y=8.2;roof.rotation.y=Math.PI/4;g.add(roof);
+ const fire=new T.Mesh(new T.SphereGeometry(.32,10,8),new T.MeshBasicMaterial({color:0xff8a22}));fire.position.set(0,9.15,0);g.add(fire);
+ g.position.set(x,y,z);scene.add(g);obs.push([x,z,2.2]);
+}
+hordeHut(22,31,7,6,3.8,'#783a2c');
+hordeHut(37,34,6,5,3.2,'#8a4a2e');
+hordeHut(38,8,5.5,5,3,'#63432f');
+hordeWatchtower(18,15);
+hordeWatchtower(43,18);
+{const t1=tm('#8a3b2a',.3,[2,2],ln(10,'rgba(30,10,5,.5)')),t2=tm('#6a4a2a',.3,[2,2],ln(10,'rgba(20,10,5,.5)'));[[30,17,t1],[34,24,t2],[24,25,t1]].forEach(([x,z,m])=>{const t=new T.Mesh(new T.ConeGeometry(2.4,3.2,7),m);t.position.set(x,H(x,z)+1.6,z);t.castShadow=true;scene.add(t);obs.push([x,z,2.3])});FIRE.forEach(([x,z])=>{const l=new T.Mesh(new T.CylinderGeometry(.5,.6,.3,8),mat(0x3a2a1a));l.position.set(x,H(x,z)+.15,z);scene.add(l)});
 const ban=new T.Mesh(new T.PlaneGeometry(1.4,3),new T.MeshLambertMaterial({color:0xa02a1a,side:T.DoubleSide})),pole=new T.Mesh(new T.CylinderGeometry(.08,.1,5.5,6),woodM);pole.position.set(28,H(28,15)+2.7,15);ban.position.set(28.2,H(28,15)+3.8,15);scene.add(pole,ban);label(ban,'Campamento de la Horda','#ff7a6a',0,0,2.2)}
 // ===== Razas, clases, login y selección de personaje =====
 const RACES={humano:{n:'Humano',f:'A',s:1,skin:0xf0c8a0,hair:0x5a3a22,d:'Versátil y ambicioso.'},enano:{n:'Enano',f:'A',s:.82,skin:0xe0b090,hair:0xb06a2a,beard:1,d:'Resistente, de barba legendaria.'},elfo:{n:'Elfo de la noche',f:'A',s:1.12,skin:0x9a6ac8,hair:0xc8d8ff,d:'Esbelto y ágil, de orejas largas.'},gnomo:{n:'Gnomo',f:'A',s:.68,skin:0xf0c8b0,hair:0xff7ab0,d:'Pequeño y genial.'},
