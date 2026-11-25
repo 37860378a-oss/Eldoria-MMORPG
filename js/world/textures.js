@@ -44,8 +44,8 @@
     for(let i=0;i<210;i++){
       const x=R()*SIZE,y=R()*SIZE;
       let ang=(R()-.5)*1.7,len=3+R()*13;
-      if(profile==='earth-wood'){ang=Math.PI/2+(R()-.5)*.38;len=4+R()*18}
-      else if(profile==='earth-wood'&&rgb[0]>rgb[1]*1.25){ang=(R()-.5)*.32}
+      if(profile==='earth-wood'&&rgb[0]>rgb[1]*1.25){ang=(R()-.5)*.32;len=5+R()*17}
+      else if(profile==='earth-wood'){ang=Math.PI/2+(R()-.5)*.38;len=4+R()*18}
       else if(profile==='foliage'){ang=(R()-.5)*2.6;len=2+R()*8}
       else if(profile==='stone'){ang=R()*Math.PI;len=3+R()*10}
       const a=(.04+R()*.075)*power;
