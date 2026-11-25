@@ -266,10 +266,10 @@ campProp(143,132);
 // ===== Paisaje vivo: puente, bordes naturales y ruinas =====
 function buildCreekBridge(cx,cz){
   const g=new T.Group(),stone=mat(0x77766c),stone2=mat(0x969184),wood=tm('#76502f',.32,[1,3],ln(8,'rgba(30,15,5,.55)',1)),dark=mat(0x49321f),water=new T.MeshLambertMaterial({color:0x397eae,transparent:true,opacity:.78});
-  const stream=new T.Mesh(new T.PlaneGeometry(5.2,30),water);stream.rotation.x=-Math.PI/2;stream.position.set(cx,H(cx,cz)-.42,cz);g.add(stream);
+  const stream=new T.Mesh(new T.PlaneGeometry(5.2,30),water);stream.rotation.x=-Math.PI/2;stream.position.set(cx,H(cx,cz)+.03,cz);g.add(stream);
   for(const side of [-1,1])for(let i=0;i<9;i++){const z=cz-13+i*3.2,x=cx+side*(3.1+.18*Math.sin(i*1.7)),h=.55+(i%3)*.16,o=new T.Mesh(new T.DodecahedronGeometry(.85+(i%2)*.2,1),stone);o.position.set(x,H(x,z)+h*.25,z);o.scale.set(1.25,h,.8);o.rotation.y=i*.7;o.castShadow=true;g.add(o)}
   for(const side of [-1,1]){const pier=new T.Mesh(new T.BoxGeometry(1.25,1.35,3.2),stone2);pier.position.set(cx+side*3.05,H(cx+side*3.05,cz)+.05,cz);pier.castShadow=true;g.add(pier)}
-  const deckY=H(cx,cz)+1.05,beam=new T.Mesh(new T.BoxGeometry(8.2,.42,2.9),dark);beam.position.set(cx,deckY,cz);beam.castShadow=true;g.add(beam);
+  const deckY=H(cx,cz)+.32,beam=new T.Mesh(new T.BoxGeometry(8.2,.42,2.9),dark);beam.position.set(cx,deckY,cz);beam.castShadow=true;g.add(beam);
   for(let i=0;i<13;i++){const plank=new T.Mesh(new T.BoxGeometry(.58,.16,2.72),wood);plank.position.set(cx-3.6+i*.6,deckY+.27,cz);plank.castShadow=true;g.add(plank)}
   for(const side of [-1,1]){const rail=new T.Mesh(new T.BoxGeometry(8.1,.18,.18),wood);rail.position.set(cx,deckY+1.05,cz+side*1.25);g.add(rail);for(let i=0;i<9;i++){const post=new T.Mesh(new T.BoxGeometry(.2,1.12,.2),dark);post.position.set(cx-3.8+i*.95,deckY+.72,cz+side*1.25);post.castShadow=true;g.add(post)}}
   for(const side of [-1,1])for(let i=0;i<3;i++){const xx=cx+side*(4.6+i*1.1),slab=new T.Mesh(new T.BoxGeometry(2.5,.22,1.15),stone2);slab.position.set(xx,H(xx,cz)+.2,cz);g.add(slab)}
