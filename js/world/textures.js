@@ -10,11 +10,11 @@
     };
     // Manchas amplias y suaves: rompen el aspecto de color plano sin cargar geometría.
     for(let i=0;i<52;i++){
-      const x=R()*SIZE,y=R()*SIZE,rx=4+R()*15,ry=3+R()*11;
+      const x=R()*SIZE,y=R()*SIZE,rx=4+R()*15,ry=3+R()*11,angle=R()*Math.PI;
       const light=R()<.52,alpha=(.025+R()*.075)*Math.min(1,variation*2.8);
       ctx.fillStyle=light?'rgba(255,238,190,'+alpha+')':'rgba(24,32,18,'+alpha+')';
       wrap(x,y,(px,py)=>{
-        ctx.beginPath();ctx.ellipse(px,py,rx,ry,R()*Math.PI,0,Math.PI*2);ctx.fill();
+        ctx.beginPath();ctx.ellipse(px,py,rx,ry,angle,0,Math.PI*2);ctx.fill();
       });
     }
     // Trazos cortos tipo pincel, con variación cálida y verde.
