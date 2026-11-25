@@ -3,6 +3,12 @@
 ## Referencia de estilo
 Entorno de fantasía estilizado y pintado a mano: bosques frondosos, árboles con siluetas claras, vegetación en capas, caminos de tierra orgánicos, rocas, flores pequeñas y luz ambiental cálida. Mantener lectura visual limpia y evitar realismo fotográfico pesado.
 
+## Texturas procedurales actuales
+- El prototipo usa texturas tileables de 128×128 generadas en canvas para no multiplicar el consumo de memoria.
+- La versión pintada v2 adapta luces y sombras al color base de cada material, en lugar de aplicar el mismo tinte verde a piedra, madera, nieve y suelo.
+- Cada textura combina pigmento amplio, pinceladas medianas, pequeños toques y grano fino; los trazos se repiten por los bordes para evitar cortes visibles.
+- Se conserva el tamaño 128×128 en esta etapa porque el código de materiales existente dibuja detalles sobre esa misma escala. No aumentar resolución sin adaptar y probar todas esas capas.
+
 ## Reglas de rendimiento
 - Priorizar texturas tileables de 256 px; usar 512 px solo en superficies cercanas o elementos destacados.
 - Reutilizar materiales y texturas por bioma.
