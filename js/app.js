@@ -729,24 +729,7 @@ const d=new T.Object3D(),col=new T.Color(),c2=new T.Color(0xd8e8a0);cells.forEac
    });
    mesh.frustumCulled=false;scene.add(mesh);GM.push({m:mesh,x:cell.x,z:cell.z});
  });
- // Helechos estilizados: hojas triangulares de bajo poligonaje, agrupadas por celdas.
- const fernPos=[];
- for(let i=0;i<(MOB?110:300)*9;i++){
-   const x=rnd(-43,43),z=rnd(-35,376),h=H(x,z);
-   if(!okp(x,z,h)||h>18||Math.abs(H(x+1,z)-h)>.55)continue;
-   fernPos.push({x,y:h+.025,z,sx:rnd(.7,1.25),sy:rnd(.7,1.25),sz:rnd(.7,1.25),ry:R()*6.3,c:pickc([0x477d35,0x5b9140,0x739d4b,0x3e6d32])});
-   if(fernPos.length>=(MOB?110:300))break;
- }
- const fernVerts=[];
- for(let i=0;i<8;i++){
-   const a=i*Math.PI*2/8,dx=Math.cos(a),dz=Math.sin(a),len=.38+(i%3)*.09,w=.075;
-   const px=-dz*w,pz=dx*w,base=[0,.04,0],left=[dx*len*.52+px,.22+len*.28,dz*len*.52+pz],right=[dx*len*.52-px,.22+len*.28,dz*len*.52-pz],tip=[dx*len,.22+len*.72,dz*len];
-   fernVerts.push(...base,...left,...tip,...base,...tip,...right);
- }
- const fernGeo=new T.BufferGeometry();
- fernGeo.setAttribute('position',new T.Float32BufferAttribute(fernVerts,3));fernGeo.computeVertexNormals();
- const fernMat=new T.MeshLambertMaterial({color:0xffffff,side:T.DoubleSide});
- inst(fernGeo,fernMat,fernPos,false);
+
 }
 try{const g=new T.Group(),mk2=(geo,x,y,rz)=>{const e=new T.Mesh(geo,cm);e.position.set(x,y,0);e.rotation.z=rz||0;g.add(e)};mk2(new T.CylinderGeometry(.35,.4,2.4,8),0,1.2);mk2(new T.CylinderGeometry(.18,.18,.7,6),.55,1.2,Math.PI/2);mk2(new T.CylinderGeometry(.2,.2,1,6),.85,1.7);const mg2=mergeTree(g,1).children[0],pts=[];
 for(let i=0;i<(MOB?300:900);i++){const x=rnd(48,376),z=rnd(-376,376),h=H(x,z);if(!okp(x,z,h)||h<8||z<-45)continue;const s=rnd(.8,1.7);pts.push({x,y:h,z,sx:s,ry:R()*6.3,c:0xffffff});obs.push([x,z,.6*s])}inst(mg2.geometry,cm,pts,1)}catch(e){errOnce('bloque',e)}
