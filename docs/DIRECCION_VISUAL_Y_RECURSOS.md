@@ -9,6 +9,12 @@ Entorno de fantasía estilizado y pintado a mano: bosques frondosos, árboles co
 - Cada textura combina pigmento amplio, pinceladas medianas, pequeños toques y grano fino; los trazos se repiten por los bordes para evitar cortes visibles.
 - Se conserva el tamaño 128×128 en esta etapa porque el código de materiales existente dibuja detalles sobre esa misma escala. No aumentar resolución sin adaptar y probar todas esas capas.
 
+### Ajuste visual v4 (25/11/2026)
+- Se aumentó la intensidad de pigmentos, pinceladas y manchas para que la textura se perciba a simple vista durante el juego.
+- Se ampliaron trazos y manchas, manteniendo el lienzo tileable de 128×128 y reduciendo el grano fino para evitar ruido visual.
+- El generador se aplica a los materiales creados mediante `tex()`; el terreno conserva además su sombreado procedural propio.
+- Esta revisión requiere comprobación visual dentro del navegador; el commit por sí solo no confirma el resultado en pantalla.
+
 ## Reglas de rendimiento
 - Priorizar texturas tileables de 256 px; usar 512 px solo en superficies cercanas o elementos destacados.
 - Reutilizar materiales y texturas por bioma.
