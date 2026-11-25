@@ -19,10 +19,10 @@
     };
     // Nubes de pigmento: variación amplia, sin bordes visibles al repetir la textura.
     for(let i=0;i<34;i++){
-      const x=R()*SIZE,y=R()*SIZE,rx=5+R()*17,ry=4+R()*13,a=(.025+R()*.055)*power;
+      const x=R()*SIZE,y=R()*SIZE,rx=5+R()*17,ry=4+R()*13,angle=(R()-.5)*.8,a=(.025+R()*.055)*power;
       ctx.fillStyle=(R()<.54?light:shade)+a+')';
       wrap(x,y,(px,py)=>{
-        ctx.beginPath();ctx.ellipse(px,py,rx,ry,(R()-.5)*.8,0,Math.PI*2);ctx.fill();
+        ctx.beginPath();ctx.ellipse(px,py,rx,ry,angle,0,Math.PI*2);ctx.fill();
       });
     }
     // Pinceladas medianas con extremos redondeados y dirección irregular.
