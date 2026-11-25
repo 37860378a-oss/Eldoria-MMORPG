@@ -704,6 +704,32 @@ function grassG(){const cells=[new Map(),new Map(),new Map()],geos=[gG,gD,gPale]
 for(let i=0;i<total*6&&cnt<total;i++){const x=rnd(-376,376),z=rnd(-376,376),zone=z<-45?3:x<-45?1:x>45?2:0;if(R()>[1,.5,.55,.3][zone])continue;const h=H(x,z);if(h<-1.1||h>(zone==3?15:30)||Math.hypot(x,z)<16||inCity(x,z,2)||onRd(x,z)||Math.abs(H(x+1,z)-h)>.7)continue;
 let gi=zone==0?0:zone==1?2:zone==2?1:(R()<.5?0:1);if(zone==2&&h<8&&R()<.5)gi=0;const key=Math.floor(x/32)+','+Math.floor(z/32),mp=cells[gi];let c=mp.get(key);if(!c){c={x:(Math.floor(x/32)+.5)*32,z:(Math.floor(z/32)+.5)*32,a:[]};mp.set(key,c)}c.a.push([x,z,h]);cnt++}
 const d=new T.Object3D(),col=new T.Color(),c2=new T.Color(0xd8e8a0);cells.forEach((mp,gi)=>mp.forEach(c=>{const m=new T.InstancedMesh(geos[gi],gm,c.a.length);c.a.forEach((p,k)=>{const L=R()<.3?.35+R()*.3:.7+R()*1.1,s0=.6+R()*.8;d.position.set(p[0],p[2]-.02,p[1]);d.rotation.set((R()-.5)*.3,R()*6.3,(R()-.5)*.3);d.scale.set(s0,L,s0*(.7+R()*.6));d.updateMatrix();m.setMatrixAt(k,d.matrix);m.setColorAt(k,col.setHex(0xffffff).lerp(c2,R()*.7))});m.frustumCulled=false;scene.add(m);GM.push({m,x:c.x,z:c.z})}))}
+ // Arbustos bajos por grupos: aportan capas al bosque con pocas llamadas de dibujo.
+ const shrubCells=new Map(),shrubTotal=MOB?85:230,shrubGeo=new T.IcosahedronGeometry(1,1),shrubMat=new T.MeshLambertMaterial({color:0xffffff});
+ for(let i=0;i<shrubTotal*5;i++){
+   const x=rnd(-370,370),z=rnd(-370,370),h=H(x,z),zone=z<-45?3:x<-45?1:x>45?2:0;
+   if(h<-1||h>(zone===3?13:25)||Math.hypot(x,z)<20||inCity(x,z,5)||onRd(x,z)||Math.abs(H(x+1,z)-h)>.65)continue;
+   if(zone===3&&R()<.7)continue;
+   const key=Math.floor(x/32)+','+Math.floor(z/32);
+   let cell=shrubCells.get(key);if(!cell){cell={x:(Math.floor(x/32)+.5)*32,z:(Math.floor(z/32)+.5)*32,items:[]};shrubCells.set(key,cell)}
+   cell.items.push({x,z,h,scale:.55+R()*.75,tone:R()});
+   if([...shrubCells.values()].reduce((n,c)=>n+c.items.length,0)>=shrubTotal)break;
+ }
+ const shrubDummy=new T.Object3D(),shrubColor=new T.Color();
+ shrubCells.forEach(cell=>{
+   const mesh=new T.InstancedMesh(shrubGeo,shrubMat,cell.items.length);
+   cell.items.forEach((p,i)=>{
+     shrubDummy.position.set(p.x,p.h+.28*p.scale,p.z);
+     shrubDummy.rotation.set((R()-.5)*.12,R()*6.28,(R()-.5)*.12);
+     shrubDummy.scale.set(p.scale,p.scale*.62,p.scale*(.8+R()*.4));
+     shrubDummy.updateMatrix();mesh.setMatrixAt(i,shrubDummy.matrix);
+     const a=shrubColor.setHex(p.tone<.5?0x5f9144:0x83a94e);
+     if(p.tone>.88)a.setHex(0xb0a95b);
+     mesh.setColorAt(i,a);
+   });
+   mesh.frustumCulled=false;scene.add(mesh);GM.push({m:mesh,x:cell.x,z:cell.z});
+ });
+}
 try{const g=new T.Group(),mk2=(geo,x,y,rz)=>{const e=new T.Mesh(geo,cm);e.position.set(x,y,0);e.rotation.z=rz||0;g.add(e)};mk2(new T.CylinderGeometry(.35,.4,2.4,8),0,1.2);mk2(new T.CylinderGeometry(.18,.18,.7,6),.55,1.2,Math.PI/2);mk2(new T.CylinderGeometry(.2,.2,1,6),.85,1.7);const mg2=mergeTree(g,1).children[0],pts=[];
 for(let i=0;i<(MOB?300:900);i++){const x=rnd(48,376),z=rnd(-376,376),h=H(x,z);if(!okp(x,z,h)||h<8||z<-45)continue;const s=rnd(.8,1.7);pts.push({x,y:h,z,sx:s,ry:R()*6.3,c:0xffffff});obs.push([x,z,.6*s])}inst(mg2.geometry,cm,pts,1)}catch(e){errOnce('bloque',e)}
 try{const cr=[],mo=[];for(let i=0;i<(MOB?400:1200);i++){const x=rnd(-376,-48),z=rnd(-376,376),h=H(x,z);if(!okp(x,z,h))continue;if(R()<.4){const s=rnd(.5,1.4);cr.push({x,y:h+s*.5,z,sx:s*.5,sy:s*1.4,sz:s*.5,rx:rnd(-.2,.2),rz:rnd(-.2,.2),ry:R()*6,c:pickc([0x9fe8ff,0xbfeaff,0xd8f4ff])})}else{const s=rnd(.8,2.2);mo.push({x,y:h+.1,z,sx:s,sy:s*.35,sz:s*rnd(.8,1.4),ry:R()*6,c:0xf4f8ff})}}inst(new T.OctahedronGeometry(1,0),new T.MeshLambertMaterial({color:0xffffff}),cr,1);inst(new T.SphereGeometry(1,8,6),new T.MeshLambertMaterial({color:0xffffff}),mo)}catch(e){errOnce('bloque',e)}
