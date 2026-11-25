@@ -27,8 +27,7 @@ Entorno de fantasía estilizado y pintado a mano: bosques frondosos, árboles co
 
 ## Compatibilidad
 Mantener Three.js r128 y renderizado WebGL. Probar en Chrome/Edge de Windows y Chrome Android. Evitar dependencias de APIs exclusivas de escritorio.
-## Vegetación añadida — paso 2
-- Helechos low-poly con hojas triangulares, instanciados y agrupados por celdas en el bosque templado.
-- Densidad limitada: 110 ejemplares en móvil y 300 en escritorio; sin sombras propias para reducir coste.
-- Se respetan las zonas urbanas, pendientes y caminos existentes para mantener despejadas las rutas.
-- Se reutilizan los sistemas de instanciado y culling ya presentes en el proyecto.
+## Vegetación y rendimiento
+- Se mantienen el césped instanciado y los arbustos low-poly existentes, agrupados por celdas para aprovechar el culling.
+- Los helechos no están activos: su primera implementación se retiró porque dejó la generación del mundo bloqueada. No reintroducirlos hasta contar con una prueba de carga controlada.
+- Las nuevas mejoras visuales priorizan materiales y texturas antes que sumar grandes cantidades de geometría.
