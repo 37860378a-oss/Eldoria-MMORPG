@@ -649,7 +649,7 @@ CITIES.forEach(c=>cityDecor(c[0],c[1],c[2]-22));{const D=DD();D.bench.push([-3,-
 tryI('decoracion',buildDecor);tryI('luces',buildLum);tryI('congelar',freezeStatic);
 
 // ===== Clases, habilidades, talentos, interfaz, clima, mapas y criaturas =====
-const CFG=Object.assign({q:1,bright:1,light:1,tex:1,shadow:1,view:.8,dens:.6,vol:.5,wx:1,fps:0,adapt:1},(()=>{try{return JSON.parse(localStorage.getItem('eld_cfg')||'{}')}catch(e){return{}}})());
+const CFG=Object.assign({q:1,bright:1,light:1,tex:1,shadow:1,view:.8,dens:.6,vol:.5,wx:1,fps:0,adapt:1},(()=>{try{return JSON.parse(localStorage.getItem('eld_cfg')||'{}')}catch(e){return{}}})());try{if(!localStorage.getItem('eld_perf_v1')){Object.assign(CFG,{q:1,tex:1,shadow:1,view:.8,dens:.6,adapt:1});localStorage.setItem('eld_perf_v1','1')}}catch(e){}
 const hex=c=>'#'+c.toString(16).padStart(6,'0'),ZN=['Valle de Eldoria','Tundra Helada','Meseta Árida','Montañas Grises'],CNAME=['Puerto Alba','Marisol','Escarcha','Brumaluna'],WHITE=new T.Color(1,1,1),
 EMO={humano:'🧑',enano:'🧔',elfo:'🧝',gnomo:'🧙',orco:'👹',nomuerto:'💀',tauren:'🐂',trol:'🧌'};
 const mkS=(n,ic,ty,mp,ct,r,c1,c2,o)=>Object.assign({n,ic,ty,mp,ct,r,c1,c2,core:0xffffff,spk:0,hs:2,up:.5,gr:0,cd:0,lv:1},o);
